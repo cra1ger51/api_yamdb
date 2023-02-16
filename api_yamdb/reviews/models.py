@@ -13,9 +13,13 @@ class User(AbstractUser):
         blank=True,
     )
     role = models.CharField(
-        max_length=9,
+        max_length=10,
         choices=ROLES,
         default='user')
+   
+    class Meta:
+        ordering = ['-id']     
+
 
 class Review(models.Model):
     SCORES = (
@@ -43,6 +47,7 @@ class Review(models.Model):
         auto_now_add=True,
         db_index=True,
     )
+
 
 class Comment(models.Model):
     title_id = models.ForeignKey(

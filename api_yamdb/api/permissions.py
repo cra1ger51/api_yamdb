@@ -18,3 +18,13 @@ class CustomPermission(BasePermission):
                 return True
         else:
             return True
+
+
+class IsAdminOrReadOnly(BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in SAFE_METHODS:
+            return True
+        elif request.user.role == 'admin':
+            return True
+

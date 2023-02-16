@@ -2,10 +2,60 @@ from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework.relations import SlugRelatedField, StringRelatedField
+from rest_framework.serializers import (CurrentUserDefault, ModelSerializer,
+                                        ValidationError)
 from rest_framework.validators import UniqueTogetherValidator
 
-from reviews.models import Comment, Review, User
+from reviews.models import (Category, Comment, Genre,
+                            Review, Title, User)
 from .validators import validate_username, validate_email
+
+
+class CategorySerializer(ModelSerializer):
+    slug = SlugRelatedField(slug_field='title')
+
+    def validate_slug(self, value):
+        if Category.objects.filter(slug=value).exists():
+            raise ValidationError(
+                'Поле slug каждой категории должно быть уникальным!')
+        return value
+
+
+    class Meta:
+        fields = ('name', 'slug',)
+        model = Category
+
+
+class GenreSerializer(ModelSerializer):
+    slug = SlugRelatedField(slug_field='title')
+
+    def validate_slug(self, value):
+        if Category.objects.filter(slug=value).exists():
+            raise ValidationError(
+                'Поле slug каждого жанра должно быть уникальным!')
+        return value
+
+    class Meta:
+        fields = ('name', 'slug',)
+        model = Genre
+
+
+class TitleSerializer(ModelSerializer):
+    author = SlugRelatedField(slug_field='username', read_only=True)
+    comments = CommentSerializer(
+        many=True, required=False
+    )
+    genre = StringRelatedField(
+
+    category = models.ForeignKey(
+
+
+
+    class Meta:
+        fields = '__all__'
+        read_only_fields = ('id', 'rating', 'description',)
+        model = Title
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -80,4 +130,3 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'username', 'email', 'first_name', 'last_name', 'bio', 'role',
         )
-

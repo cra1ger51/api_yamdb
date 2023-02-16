@@ -10,9 +10,16 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from reviews.models import Comment, Review, Title, User
-from .permissons import CustomPermission, IsAdminOrSuperuserPermission
+from .permissons import (CustomPermission, IsAdminOrReadOnly,
+                         IsAdminOrSuperuserPermission)
 from .serializers import (CommentSerializer, ReviewSerializer, 
                           SignUpSerializer, TokenSerializer, UserSerializer)
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

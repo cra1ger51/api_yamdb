@@ -12,9 +12,11 @@ class IsAdminOrSuperuserPermission(BasePermission):
 class CustomPermission(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method not in SAFE_METHODS:
-            if request.method == 'POST' and request.user.is_authenticated == True:
+            if (request.method == 'POST'
+               and request.user.is_authenticated):
                 return True
-            elif obj.author == request.user or request.user.role in ('moderator','admin'):
+            elif (obj.author == request.user
+                  or request.user.role in ('moderator', 'admin')):
                 return True
         else:
             return True
@@ -27,4 +29,3 @@ class IsAdminOrReadOnly(BasePermission):
             return True
         elif request.user.role == 'admin':
             return True
-

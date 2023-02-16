@@ -10,10 +10,11 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from reviews.models import Comment, Review, Title, User
-from .permissons import (CustomPermission, IsAdminOrReadOnly,
-                         IsAdminOrSuperuserPermission)
-from .serializers import (CommentSerializer, ReviewSerializer, 
-                          SignUpSerializer, TokenSerializer, UserSerializer)
+from .permissions import (CustomPermission, IsAdminOrReadOnly,
+                          IsAdminOrSuperuserPermission)
+from .serializers import (CommentSerializer, ReviewSerializer,
+                          SignUpSerializer, TitleSerializer, TokenSerializer,
+                          UserSerializer)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -26,7 +27,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
     permission_classes = (CustomPermission, )
-    
 
     def get_one_title(self):
         title_id = self.kwargs.get('title_id')
@@ -35,7 +35,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def update_title_rating(self):
         title = self.get_one_title()
-        new_rating = Review.objects.filter(title__exact=title.id).aggregate(Avg('score'))
+        new_rating = (Review.objects.filter(
+            title__exact=title.id).aggregate(Avg('score'))
+        )
         title.update(rating=new_rating)
 
     def get_queryset(self):

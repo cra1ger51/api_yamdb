@@ -19,7 +19,7 @@ class ReviewViewSet(ModelViewSet):
     def update_title_rating(self):
         title = self.get_one_title()
         new_rating = Review.objects.filter(title__exact=title.id).aggregate(Avg('score'))
-
+        title.update(rating=new_rating)
 
     def get_queryset(self):
         title = self.get_one_title()
@@ -32,8 +32,8 @@ class ReviewViewSet(ModelViewSet):
         self.update_title_rating()
 
     def partial_update(self, request, *args, **kwargs):
-        берем старый враиант обзора, сохраняем значение, сверяем с новым значением, если изменилось - обновляем рейтинг после обновления обзора
-        return super().partial_update(request, *args, **kwargs)
+        super().partial_update(request, *args, **kwargs)
+        self.update_title_rating()
 
     def destroy(self, request, pk):
         review = Review.objects.get(pk=pk)

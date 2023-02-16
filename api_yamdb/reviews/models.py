@@ -13,6 +13,9 @@ class User(AbstractUser):
         blank=True,
     )
     role = models.CharField(
-        max_length=9,
+        max_length=10,
         choices=ROLES,
         default='user')
+
+    class Meta:
+        ordering = ['-id']

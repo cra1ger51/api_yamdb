@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.relations import SlugRelatedField, StringRelatedField
-from rest_framework.serializers import (CurrentUserDefault, ModelSerializer,
+from rest_framework.serializers import (ModelSerializer,
                                         ValidationError)
 from rest_framework.validators import UniqueTogetherValidator
 
@@ -13,7 +13,8 @@ from .validators import validate_username, validate_email
 
 
 class CategorySerializer(ModelSerializer):
-    slug = SlugRelatedField(slug_field='title')
+    # Добавил read_only=True, обязательный аргумент для рилейтед полей
+    slug = SlugRelatedField(slug_field='title', read_only=True)
 
     def validate_slug(self, value):
         if Category.objects.filter(slug=value).exists():
@@ -21,14 +22,14 @@ class CategorySerializer(ModelSerializer):
                 'Поле slug каждой категории должно быть уникальным!')
         return value
 
-
     class Meta:
         fields = ('name', 'slug',)
         model = Category
 
 
 class GenreSerializer(ModelSerializer):
-    slug = SlugRelatedField(slug_field='title')
+    # Добавил read_only=True, обязательный аргумент для рилейтед полей
+    slug = SlugRelatedField(slug_field='title', read_only=True)
 
     def validate_slug(self, value):
         if Category.objects.filter(slug=value).exists():
@@ -41,27 +42,26 @@ class GenreSerializer(ModelSerializer):
         model = Genre
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = Comment
+
+
 class TitleSerializer(ModelSerializer):
     author = SlugRelatedField(slug_field='username', read_only=True)
     comments = CommentSerializer(
         many=True, required=False
     )
-    genre = StringRelatedField(
-
-    category = models.ForeignKey(
-
-
+    # Добавил read_only=True, обязательный аргумент для рилейтед полей
+    genre = StringRelatedField(read_only=True)
+    # Добавил read_only=True, обязательный аргумент для рилейтед полей
+    category = SlugRelatedField(slug_field='titles', read_only=True)
 
     class Meta:
         fields = '__all__'
         read_only_fields = ('id', 'rating', 'description',)
         model = Title
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = '__all__'
-        model = Comment
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -74,6 +74,7 @@ class ReviewSerializer(serializers.ModelSerializer):
                 fields=('title', 'author')
             )
         ]
+
 
 class TokenSerializer(serializers.ModelSerializer):
     confirmation_code = serializers.CharField(allow_blank=False)

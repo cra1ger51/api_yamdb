@@ -16,9 +16,9 @@ class User(AbstractUser):
         max_length=10,
         choices=ROLES,
         default='user')
-        
+
     class Meta:
-        ordering = ['-id'] 
+        ordering = ['-id']
 
 
 class Genre(models.Model):
@@ -42,6 +42,7 @@ class Category(models.Model):
 class Title(models.Model):
     """Произведение."""
     name = models.CharField(
+        max_length=256,
         verbose_name='Название произведения'
     )
     year = models.PositiveIntegerField(
@@ -55,6 +56,7 @@ class Title(models.Model):
     genre = models.ForeignKey(
         Genre,
         on_delete=models.SET_NULL,
+        null=True,  # тут просил поставить null-True, т.к. стоит SET_NULL
         related_name='titles',
         verbose_name='Жанр'
     )
@@ -76,8 +78,20 @@ class Title(models.Model):
 
 
 class Review(models.Model):
+    # SCORES = (
+    #     (1, 2, 3, 4, 5, 6, 7, 8, 9, 10,),
+    # )
     SCORES = (
-        (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        (1, "1"),
+        (2, "2"),
+        (3, "3"),
+        (4, "4"),
+        (5, "5"),
+        (6, "6"),
+        (7, "7"),
+        (8, "8"),
+        (9, "9"),
+        (10, "10"),
     )
     title_id = models.ForeignKey(
         Title,
@@ -95,6 +109,7 @@ class Review(models.Model):
         default=1,
     )
     score = models.IntegerField(
+        verbose_name='Оценка',
         choices=SCORES,
     )
     pub_date = models.DateTimeField(

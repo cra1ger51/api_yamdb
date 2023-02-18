@@ -2,7 +2,8 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .views import (CommentViewSet, ReviewViewSet, signup,
-                    TitleViewSet, token, UserViewset)
+                    TitleViewSet, token, UserViewset, CategoryViewSet,
+                    GenreViewSet)
 
 
 v1_router = DefaultRouter()
@@ -20,14 +21,12 @@ v1_router.register(
 v1_router.register(
     r'titles', TitleViewSet
 )
-# Тут пока что закомментировал, чтобы убрать импорты этих втюсетов
-# т.к. несуществующие импорты мешают миграциям и тестам
-# v1_router.register(
-#     r'categories', CategoryViewSet
-# )
-# v1_router.register(
-#     r'genre', GenreViewSet
-# )
+v1_router.register(
+    r'categories', CategoryViewSet
+)
+v1_router.register(
+    r'genres', GenreViewSet
+)
 
 urlpatterns = [
     path('auth/token/', token),

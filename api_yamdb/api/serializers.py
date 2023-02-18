@@ -14,7 +14,7 @@ from .validators import validate_username, validate_email
 
 class CategorySerializer(ModelSerializer):
     # Добавил read_only=True, обязательный аргумент для рилейтед полей
-    slug = SlugRelatedField(slug_field='title', read_only=True)
+    #slug = serializers.SlugField(read_only=True, max_length=50, allow_blank=False)
 
     def validate_slug(self, value):
         if Category.objects.filter(slug=value).exists():
@@ -29,7 +29,7 @@ class CategorySerializer(ModelSerializer):
 
 class GenreSerializer(ModelSerializer):
     # Добавил read_only=True, обязательный аргумент для рилейтед полей
-    slug = SlugRelatedField(slug_field='title', read_only=True)
+    #slug = SlugRelatedField(slug_field='title', read_only=True)
 
     def validate_slug(self, value):
         if Category.objects.filter(slug=value).exists():
@@ -87,7 +87,7 @@ class TokenSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         user = get_object_or_404(User, username=data['username'])
-        confirmation_code = default_token_generator.make_token(user)
+        confirmation_code = user.confirmation_code
         if str(confirmation_code) != data['confirmation_code']:
             raise ValidationError('Неверный код подтверждения')
         return data

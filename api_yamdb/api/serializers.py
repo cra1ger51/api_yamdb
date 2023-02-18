@@ -16,7 +16,7 @@ from .validators import (validate_username,
 
 class CategorySerializer(ModelSerializer):
     # Добавил read_only=True, обязательный аргумент для рилейтед полей
-    slug = SlugRelatedField(slug_field='title', read_only=True)
+    #slug = serializers.SlugField(read_only=True, max_length=50, allow_blank=False)
 
     def validate_slug(self, value):
         if Category.objects.filter(slug=value).exists():
@@ -31,7 +31,7 @@ class CategorySerializer(ModelSerializer):
 
 class GenreSerializer(ModelSerializer):
     # Добавил read_only=True, обязательный аргумент для рилейтед полей
-    slug = SlugRelatedField(slug_field='title', read_only=True)
+    #slug = SlugRelatedField(slug_field='title', read_only=True)
 
     def validate_slug(self, value):
         if Category.objects.filter(slug=value).exists():

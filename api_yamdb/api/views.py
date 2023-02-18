@@ -109,6 +109,16 @@ class UserViewset(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+def token_create(user):
+    refresh = RefreshToken.for_user(user)
+    token = {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
+    response = {'token': str(token['access'])}
+    return Response(response, status=status.HTTP_200_OK)
+
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def signup(request):
@@ -124,10 +134,7 @@ def signup(request):
             username=request.data.get('username')
         )
         if created is False:
-            confirmation_code = default_token_generator.make_token(user)
-            user.confirmation_code = confirmation_code
-            user.save()
-            return Response('Токен обновлен', status=status.HTTP_200_OK)
+            return token_create(user)
     serializer.is_valid(raise_exception=True)
     serializer.save()
     user = User.objects.get(username=request.data['username'],
@@ -135,7 +142,7 @@ def signup(request):
     confirmation_code = default_token_generator.make_token(user)
     user.confirmation_code = confirmation_code
     send_mail(f'Уважаемый, {str(user.username)}! Код подтверждения:',
-              confirmation_code,
+              f' Ваш код подтверждени: {confirmation_code}',
               settings.EMAIL_SENDER,
               [request.data['email']],
               fail_silently=True)
@@ -149,16 +156,8 @@ def token(request):
     Валидация кода подтверждения и формирование токена новому пользователю.
     """
     serializer = TokenSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    user = get_object_or_404(User, username=request.data['username'])
-    confirmation_code = request.data['confirmation_code']
-    if default_token_generator.check_token(user, confirmation_code):
-        refresh = RefreshToken.for_user(user)
-        token = {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }
-        response = {'token': str(token['access'])}
-        return Response(response, status=status.HTTP_200_OK)
+    if serializer.is_valid(raise_exception=True):
+        user = get_object_or_404(User, username=request.data['username'])
+        return token_create(user)
     return Response(serializer.errors,
                     status=status.HTTP_400_BAD_REQUEST)

@@ -9,7 +9,9 @@ from rest_framework.validators import UniqueTogetherValidator
 
 from reviews.models import (Category, Comment, Genre,
                             Review, Title, User)
-from .validators import validate_username, validate_email
+from .validators import (validate_username,
+                         validate_username_exists,
+                         validate_email)
 
 
 class CategorySerializer(ModelSerializer):
@@ -87,8 +89,8 @@ class TokenSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         user = get_object_or_404(User, username=data['username'])
-        confirmation_code = default_token_generator.make_token(user)
-        if str(confirmation_code) != data['confirmation_code']:
+        confirmation_code = data['confirmation_code']
+        if not default_token_generator.check_token(user, confirmation_code):
             raise ValidationError('Неверный код подтверждения')
         return data
 
@@ -118,11 +120,20 @@ class SignUpSerializer(serializers.Serializer):
         instance.save()
         return instance
 
+    def validate(self, data):
+        if User.objects.filter(username=data['username']).exists():
+            user = get_object_or_404(User, username=data['username'])
+            if user.email != data['email']:
+                raise ValidationError('Вы ввели не ваш email!')
+        return data
+
 
 class UserSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(max_length=150,
-                                     validators=[validate_username],
-                                     allow_blank=False)
+    username = serializers.CharField(
+        max_length=150,
+        validators=[validate_username, validate_username_exists],
+        allow_blank=False
+    )
     email = serializers.CharField(max_length=254, validators=[validate_email],
                                   allow_blank=False)
 

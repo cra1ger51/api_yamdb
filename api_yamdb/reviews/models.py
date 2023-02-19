@@ -100,6 +100,7 @@ class GenreTitle(models.Model):
 
 
 class Review(models.Model):
+    """Модель обзоров."""
     SCORES = (
         (1, "1"),
         (2, "2"),
@@ -125,7 +126,6 @@ class Review(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='reviews',
-        default=1,
     )
     score = models.IntegerField(
         verbose_name='Оценка',
@@ -136,8 +136,13 @@ class Review(models.Model):
         db_index=True,
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['title', 'author'], name='title_author')
+        ]
 
 class Comment(models.Model):
+    """Модель комментариев к обзорам."""
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,

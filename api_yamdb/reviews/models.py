@@ -137,9 +137,12 @@ class Review(models.Model):
     )
 
     class Meta:
+        ordering = ['-id']
         constraints = [
-            models.UniqueConstraint(fields=['title', 'author'], name='title_author')
+            models.UniqueConstraint(fields=['title', 'author'],
+                                    name='title_author')
         ]
+
 
 class Comment(models.Model):
     """Модель комментариев к обзорам."""
@@ -166,3 +169,6 @@ class Comment(models.Model):
         auto_now_add=True,
         db_index=True,
     )
+
+    class Meta:
+        ordering = ['-id']

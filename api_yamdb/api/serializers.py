@@ -2,15 +2,12 @@ from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from rest_framework.serializers import (ModelSerializer,
-                                        ValidationError)
+from rest_framework.serializers import ModelSerializer, ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 
-from reviews.models import (Category, Comment, Genre,
-                            Review, Title, User)
-from .validators import (validate_username,
-                         validate_username_exists,
-                         validate_email)
+from reviews.models import Category, Comment, Genre, Review, Title, User
+from .validators import (validate_email, validate_username,
+                         validate_username_exists)
 
 
 class CategorySerializer(ModelSerializer):
@@ -29,6 +26,7 @@ class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
+
     class Meta:
         fields = '__all__'
         model = Comment
@@ -59,19 +57,22 @@ class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
+
     class Meta:
         fields = '__all__'
         model = Review
         read_only_fields = ('title', 'author')
+
     def validate(self, data):
         view = self.context.get('view')
         title = view.kwargs['title_id']
         if self.context['request'].method == 'POST':
             if Review.objects.filter(author=self.context['request'].user,
-                                    title=title).exists():
-                raise ValidationError('Только один обзор от одного пользователя!')
-            return data 
-        return data 
+                                     title=title).exists():
+                raise ValidationError(
+                    'Только один обзор от одного пользователя!')
+            return data
+        return data
 
 
 class TokenSerializer(serializers.ModelSerializer):

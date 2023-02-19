@@ -10,6 +10,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import PermissionDenied
+
 from reviews.models import Category, Genre, Comment, Review, Title, User
 from .permissions import (CustomPermission, IsAdminOrReadOnly,
                           IsAdminOrSuperuserPermission)
@@ -78,7 +79,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, CustomPermission)
     queryset = Review.objects.all()
-    
 
     def get_one_title(self):
         title_id = self.kwargs.get('title_id')
@@ -100,7 +100,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def one_author_one_review_check(self):
         title = self.get_one_title()
-        if Review.objects.filter(title=title, author=self.request.user.id).exists():
+        if Review.objects.filter(title=title,
+                                 author=self.request.user.id).exists():
             return False
         return True
 
@@ -114,7 +115,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         if self.one_author_one_review_check():
             serializer.save(author=author, title=title)
             self.update_title_rating()
-
 
     def perform_destroy(self, serializer):
         if self.request.user.role == 'user':
@@ -150,7 +150,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         review = self.get_one_review()
         title = self.get_one_title()
         author = self.request.user
-        serializer.save(author=author, review=review, title = title)
+        serializer.save(author=author, review=review, title=title)
 
 
 class UserViewset(viewsets.ModelViewSet):

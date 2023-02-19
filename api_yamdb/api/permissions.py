@@ -15,7 +15,8 @@ class CustomPermission(BasePermission):
             return True
         elif (request.method == 'POST' and request.user.is_authenticated):
             return True
-        elif (obj.author == request.user or request.user.is_authenticated and request.user.role in ('moderator', 'admin')):
+        elif (obj.author == request.user or request.user.is_authenticated
+              and request.user.role in ('moderator', 'admin')):
             return True
 
 
@@ -25,4 +26,4 @@ class IsAdminOrReadOnly(BasePermission):
             return True
         return bool(request.user.is_authenticated
                     and (request.user.is_staff
-                    or request.user.role == 'admin'))
+                         or request.user.role == 'admin'))

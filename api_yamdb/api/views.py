@@ -3,11 +3,10 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
-from django_filters import rest_framework
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -51,21 +50,23 @@ class GenreViewSet(viewsets.ModelViewSet):
         genre = self.get_object()
         return Response(genre.delete(), status=status.HTTP_204_NO_CONTENT)
 
-class ProductFilter(rest_framework.FilterSet):
-    genre = rest_framework.AllValuesFilter()
-
-    class Meta:
-        model = Title
-        fields = ['genre']
-
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     permission_classes = (IsAdminOrReadOnly, )
     filter_backends = (DjangoFilterBackend, )
-    # filterset_fields = ('genre__slug',)
-    filterset_class = ProductFilter
+    filterset_fields = ('year', 'name')
     lookup_field = 'id'
+
+    def get_queryset(self):
+        queryset = Title.objects.all()
+        genre = self.request.query_params.get('genre')
+        category = self.request.query_params.get('category')
+        if genre is not None:
+            queryset = queryset.filter(genre__slug=genre)
+        elif category is not None:
+            queryset = queryset.filter(category__slug=category)
+        return queryset
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):

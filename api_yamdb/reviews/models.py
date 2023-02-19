@@ -29,6 +29,9 @@ class Genre(models.Model):
     def __str__(self):
         return self.slug
 
+    class Meta:
+        ordering = ['-id']
+
 
 class Category(models.Model):
     """Категории."""
@@ -37,6 +40,9 @@ class Category(models.Model):
 
     def __str__(self):
         return self.slug
+
+    class Meta:
+        ordering = ['-id']
 
 
 class Title(models.Model):
@@ -58,7 +64,7 @@ class Title(models.Model):
         Genre,
         through='GenreTitle',
         verbose_name='Жанр'
-     )
+    )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
@@ -89,11 +95,11 @@ class GenreTitle(models.Model):
     def __str__(self):
         return f'{self.genre}{self.title}'
 
+    class Meta:
+        ordering = ['-id']
+
 
 class Review(models.Model):
-    # SCORES = (
-    #     (1, 2, 3, 4, 5, 6, 7, 8, 9, 10,),
-    # )
     SCORES = (
         (1, "1"),
         (2, "2"),

@@ -2,7 +2,6 @@ from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from rest_framework.relations import SlugRelatedField, StringRelatedField
 from rest_framework.serializers import (ModelSerializer,
                                         ValidationError)
 from rest_framework.validators import UniqueTogetherValidator
@@ -15,30 +14,12 @@ from .validators import (validate_username,
 
 
 class CategorySerializer(ModelSerializer):
-    # Добавил read_only=True, обязательный аргумент для рилейтед полей
-    #slug = serializers.SlugField(read_only=True, max_length=50, allow_blank=False)
-
-    def validate_slug(self, value):
-        if Category.objects.filter(slug=value).exists():
-            raise ValidationError(
-                'Поле slug каждой категории должно быть уникальным!')
-        return value
-
     class Meta:
         fields = ('name', 'slug',)
         model = Category
 
 
 class GenreSerializer(ModelSerializer):
-    # Добавил read_only=True, обязательный аргумент для рилейтед полей
-    #slug = SlugRelatedField(slug_field='title', read_only=True  )
-
-    def validate_slug(self, value):
-        if Category.objects.filter(slug=value).exists():
-            raise ValidationError(
-                'Поле slug каждого жанра должно быть уникальным!')
-        return value
-
     class Meta:
         fields = ('name', 'slug',)
         model = Genre
@@ -53,7 +34,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class TitleCreateSerializer(ModelSerializer):
     genre = serializers.SlugRelatedField(many=True, slug_field='slug',
                                          queryset=Genre.objects.all())
-    category = serializers.SlugRelatedField(many=True, slug_field='slug',
+    category = serializers.SlugRelatedField(slug_field='slug',
                                             queryset=Category.objects.all())
 
     class Meta:

@@ -31,7 +31,7 @@ class CategorySerializer(ModelSerializer):
 
 class GenreSerializer(ModelSerializer):
     # Добавил read_only=True, обязательный аргумент для рилейтед полей
-    #slug = SlugRelatedField(slug_field='title', read_only=True)
+    #slug = SlugRelatedField(slug_field='title', read_only=True  )
 
     def validate_slug(self, value):
         if Category.objects.filter(slug=value).exists():
@@ -50,19 +50,23 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
 
 
-class TitleSerializer(ModelSerializer):
-    author = SlugRelatedField(slug_field='username', read_only=True)
-    comments = CommentSerializer(
-        many=True, required=False
-    )
-    # Добавил read_only=True, обязательный аргумент для рилейтед полей
-    genre = StringRelatedField(read_only=True)
-    # Добавил read_only=True, обязательный аргумент для рилейтед полей
-    category = SlugRelatedField(slug_field='titles', read_only=True)
+class TitleCreateSerializer(ModelSerializer):
+    genre = serializers.SlugRelatedField(many=True, slug_field='slug',
+                                         queryset=Genre.objects.all())
+    category = serializers.SlugRelatedField(many=True, slug_field='slug',
+                                            queryset=Category.objects.all())
 
     class Meta:
         fields = '__all__'
-        read_only_fields = ('id', 'rating', 'description',)
+        model = Title
+
+
+class TitleGetSerializer(ModelSerializer):
+    genre = GenreSerializer(many=True, read_only=True)
+    category = CategorySerializer()
+
+    class Meta:
+        fields = '__all__'
         model = Title
 
 

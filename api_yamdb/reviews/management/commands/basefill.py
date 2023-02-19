@@ -40,7 +40,6 @@ class Command(BaseCommand):
         reader = get_reader('titles.csv')
         next(reader, None)
         for row in reader:
-            obj_category = get_object_or_404(Category, id=row[3])
             obj, created = Title.objects.get_or_create(
                 id=row[0],
                 name=row[1],
@@ -97,5 +96,3 @@ class Command(BaseCommand):
                 pub_date=row[4],
                 title_id=obj_title
             )
-
-

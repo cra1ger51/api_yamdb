@@ -54,13 +54,11 @@ class Title(models.Model):
         verbose_name='Рейтинг'
     )
     description = models.TextField()
-    genre = models.ForeignKey(
+    genre = models.ManyToManyField(
         Genre,
-        on_delete=models.SET_NULL,
-        null=True,  # тут просил поставить null-True, т.к. стоит SET_NULL
-        related_name='titles',
+        through='GenreTitle',
         verbose_name='Жанр'
-    )
+     )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
@@ -108,7 +106,7 @@ class Review(models.Model):
         (9, "9"),
         (10, "10"),
     )
-    title_id = models.ForeignKey(
+    title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
         related_name='reviews',
@@ -134,12 +132,12 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
-    title_id = models.ForeignKey(
+    title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
         related_name='comments',
     )
-    review_id = models.ForeignKey(
+    review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
         related_name='comments'

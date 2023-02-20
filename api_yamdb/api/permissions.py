@@ -17,9 +17,12 @@ class CustomPermission(BasePermission):
 
 
 class IsAdminOrReadOnly(BasePermission):
+    """
+    Полный доступ к функционалу получает только админ.
+    Остальные пользователи имеют тоступ только к методам 'GET', 'HEAD' или 'OPTIONS'.
+    """
     def has_permission(self, request, view):
-        if request.method in SAFE_METHODS:
-            return True
-        return bool(request.user.is_authenticated
+        return request.method in SAFE_METHODS or (
+                request.user.is_authenticated
                     and (request.user.is_staff
                          or request.user.role == 'admin'))

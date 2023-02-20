@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Comment, Review, Title, Genre, Category, GenreTitle
+from .models import Category, Comment, Genre, Review, Title
 
 
 class ReviewAdmin(admin.ModelAdmin):
@@ -11,8 +11,8 @@ class ReviewAdmin(admin.ModelAdmin):
                     'score',
                     'pub_date',
                     )
-                    
-                    
+
+
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('title',
                     'review',
@@ -22,14 +22,17 @@ class CommentAdmin(admin.ModelAdmin):
                     )
 
 
+class GenreTitleInline(admin.TabularInline):
+    model = Title.genre.through
+
+
 class TitleAdmin(admin.ModelAdmin):
+    inlines = (GenreTitleInline, )
     list_display = ('id',
                     'name',
                     'year',
-                    'rating',
                     'description',
-                    'category_id',
-                    'genre_id',
+                    'category',
                     )
 
 
@@ -45,6 +48,7 @@ class GenreAdmin(admin.ModelAdmin):
                     'name',
                     'slug',
                     )
+    inlines = (GenreTitleInline,)
 
 
 admin.site.register(Title, TitleAdmin)
@@ -52,4 +56,3 @@ admin.site.register(Category, CategoryAdmin)
 admin.site.register(Genre, GenreAdmin)
 admin.site.register(Review, ReviewAdmin)
 admin.site.register(Comment, CommentAdmin)
-

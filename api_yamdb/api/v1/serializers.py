@@ -1,5 +1,7 @@
-from rest_framework import serializers
-from rest_framework.serializers import ModelSerializer, ValidationError
+from rest_framework.serializers import (IntegerField,
+                                        ModelSerializer,
+                                        SlugRelatedField,
+                                        ValidationError)
 
 from reviews.models import Category, Comment, Genre, Review, Title
 
@@ -16,8 +18,8 @@ class GenreSerializer(ModelSerializer):
         model = Genre
 
 
-class CommentSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(
+class CommentSerializer(ModelSerializer):
+    author = SlugRelatedField(
         read_only=True, slug_field='username'
     )
 
@@ -28,10 +30,10 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class TitleCreateSerializer(ModelSerializer):
-    genre = serializers.SlugRelatedField(many=True, slug_field='slug',
-                                         queryset=Genre.objects.all())
-    category = serializers.SlugRelatedField(slug_field='slug',
-                                            queryset=Category.objects.all())
+    genre = SlugRelatedField(many=True, slug_field='slug',
+                             queryset=Genre.objects.all())
+    category = SlugRelatedField(slug_field='slug',
+                                queryset=Category.objects.all())
 
     class Meta:
         fields = '__all__'
@@ -41,14 +43,15 @@ class TitleCreateSerializer(ModelSerializer):
 class TitleGetSerializer(ModelSerializer):
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer()
+    rating = IntegerField()
 
     class Meta:
         fields = '__all__'
         model = Title
 
 
-class ReviewSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(
+class ReviewSerializer(ModelSerializer):
+    author = SlugRelatedField(
         read_only=True, slug_field='username'
     )
 

@@ -10,7 +10,7 @@ class Genre(models.Model):
     slug = models.SlugField(max_length=50, unique=True)
 
     class Meta:
-        ordering = ['-id']
+        ordering = ('id',)
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
 
@@ -24,7 +24,7 @@ class Category(models.Model):
     slug = models.SlugField(max_length=50, unique=True)
 
     class Meta:
-        ordering = ['-id']
+        ordering = ('id',)
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
@@ -40,11 +40,6 @@ class Title(models.Model):
     )
     year = models.PositiveIntegerField(
         verbose_name='Год выпуска'
-    )
-    rating = models.IntegerField(
-        null=True,
-        blank=True,
-        verbose_name='Рейтинг'
     )
     description = models.TextField()
     genre = models.ManyToManyField(
@@ -64,7 +59,7 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
-        ordering = ['-id']
+        ordering = ('id',)
 
     def __str__(self):
         return self.name
@@ -80,7 +75,7 @@ class GenreTitle(models.Model):
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ['-id']
+        ordering = ('id',)
         verbose_name = 'Жанр-Произведение'
         verbose_name_plural = 'Жанр-Произведения'
 
@@ -124,7 +119,7 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Обзор'
         verbose_name_plural = 'Обзоры'
-        ordering = ['-id']
+        ordering = ('id',)
         constraints = [
             models.UniqueConstraint(fields=['title', 'author'],
                                     name='title_author')
@@ -170,7 +165,7 @@ class Comment(models.Model):
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
-        ordering = ['-id']
+        ordering = ('id',)
 
     def __str__(self):
         return f'Комментарий к {self.review}'

@@ -1,20 +1,14 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, permissions, status, viewsets, mixins
-from rest_framework.decorators import action
+from rest_framework import filters, mixins, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
-from rest_framework.exceptions import PermissionDenied
 
-from reviews.models import Category, Genre, Comment, Review, Title
 from .permissions import CustomPermission, IsAdminOrReadOnly
-from .serializers import (CommentSerializer,
-                          ReviewSerializer,
-                          TitleGetSerializer,
-                          TitleCreateSerializer,
-                          CategorySerializer,
-                          GenreSerializer)
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, ReviewSerializer,
+                          TitleCreateSerializer, TitleGetSerializer)
+from reviews.models import Category, Genre, Review, Title
 
 
 class CustomBaseClass(
@@ -24,6 +18,7 @@ class CustomBaseClass(
     viewsets.GenericViewSet
 ):
     pass
+
 
 class CategoryViewSet(CustomBaseClass):
     queryset = Category.objects.all()
@@ -47,11 +42,12 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     permission_classes = (IsAdminOrReadOnly, )
     filter_backends = (DjangoFilterBackend, )
-    filterset_fields = ('year', 'name')
-    lookup_field = 'id'
+    filterset_fields = ('year', 'name',)
+    lookup_field = "id"
 
     def get_queryset(self):
-        queryset = Title.objects.all()
+        queryset = Title.objects.annotate(
+            rating=Avg('reviews__score')).order_by('id')
         genre = self.request.query_params.get('genre')
         category = self.request.query_params.get('category')
         if genre is not None:

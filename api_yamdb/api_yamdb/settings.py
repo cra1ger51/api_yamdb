@@ -10,7 +10,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-AUTH_USER_MODEL = 'reviews.User'
+AUTH_USER_MODEL = 'users.User'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'api',
     'reviews',
+    'users',
 ]
 
 MIDDLEWARE = [

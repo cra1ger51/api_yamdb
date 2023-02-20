@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, permissions, status, viewsets
+from rest_framework import filters, permissions, status, viewsets, mixins
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
@@ -20,36 +20,30 @@ from .serializers import (CommentSerializer, ReviewSerializer,
                           UserSerializer, CategorySerializer, GenreSerializer)
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CustomBaseClass(
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
+    pass
+
+class CategoryViewSet(CustomBaseClass):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     permission_classes = (IsAdminOrReadOnly,)
-
-    @action(detail=False,
-            methods=['delete'],
-            url_path=r'(?P<slug>\w+)',
-            lookup_field='slug')
-    def destroy_category(self, request, slug):
-        category = self.get_object()
-        return Response(category.delete(), status=status.HTTP_204_NO_CONTENT)
+    lookup_field = "slug"
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(CustomBaseClass):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
-
-    @action(detail=False,
-            methods=['delete'],
-            url_path=r'(?P<slug>\w+)',
-            lookup_field='slug')
-    def destroy_genre(self, request, slug):
-        genre = self.get_object()
-        return Response(genre.delete(), status=status.HTTP_204_NO_CONTENT)
+    lookup_field = "slug"
 
 
 class TitleViewSet(viewsets.ModelViewSet):

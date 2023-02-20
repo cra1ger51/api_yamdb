@@ -1,18 +1,6 @@
 from django.contrib import admin
 
-from .models import User, Comment, Review
-
-
-class UserAdmin(admin.ModelAdmin):
-    list_display = ('username',
-                    'email',
-                    'first_name',
-                    'last_name',
-                    'bio',
-                    'role',
-                    'is_staff',
-                    'is_superuser',
-                    )
+from .models import Comment, Review
 
 
 class ReviewAdmin(admin.ModelAdmin):
@@ -34,6 +22,5 @@ class CommentAdmin(admin.ModelAdmin):
                     )
 
 
-admin.site.register(User, UserAdmin)
 admin.site.register(Review, ReviewAdmin)
 admin.site.register(Comment, CommentAdmin)

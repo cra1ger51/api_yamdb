@@ -1,14 +1,6 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
-class IsAdminOrSuperuserPermission(BasePermission):
-
-    def has_permission(self, request, view):
-        if request.user.role == 'admin' or request.user.is_superuser:
-            return True
-        return False
-
-
 class CustomPermission(BasePermission):
     """
     Проверяем и пропускаем дальше:

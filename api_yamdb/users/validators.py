@@ -2,7 +2,7 @@ import re
 
 from rest_framework.exceptions import ValidationError
 
-from reviews.models import User
+from users.models import User
 
 
 def validate_username(value):

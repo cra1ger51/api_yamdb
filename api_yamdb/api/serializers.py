@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer, ValidationError
 
 from reviews.models import Category, Comment, Genre, Review, Title

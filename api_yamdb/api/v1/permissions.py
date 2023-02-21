@@ -1,6 +1,6 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-from users.models import ADMIN, MODERATOR
+from users.models import User
 
 
 class CustomPermission(BasePermission):
@@ -16,7 +16,7 @@ class CustomPermission(BasePermission):
             or (request.method == 'POST' and request.user.is_authenticated)
             or (obj.author == request.user
                 or request.user.is_authenticated
-                and request.user.role in (MODERATOR, ADMIN))
+                and request.user.role in (User.MODERATOR, User.ADMIN))
         )
 
 
@@ -30,4 +30,4 @@ class IsAdminOrReadOnly(BasePermission):
         return (request.method in SAFE_METHODS
                 or (request.user.is_authenticated
                     and (request.user.is_staff
-                         or request.user.role == ADMIN)))
+                         or request.user.role == User.ADMIN)))

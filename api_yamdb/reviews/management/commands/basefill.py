@@ -3,10 +3,15 @@ import os
 
 from django.core.management.base import BaseCommand
 from django.shortcuts import get_object_or_404
-from reviews.models import (Category, Comment, Genre, GenreTitle, Review,
-                            Title, User)
 
 from api_yamdb.settings import BASE_DIR
+from reviews.models import (Category,
+                            Comment,
+                            Genre,
+                            GenreTitle,
+                            Review,
+                            Title)
+from users.models import User
 
 
 def get_reader(file_name):

@@ -1,5 +1,6 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
+from .filters import TitleFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -39,22 +40,11 @@ class GenreViewSet(CustomBaseClass):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
-    permission_classes = (IsAdminOrReadOnly, )
-    filter_backends = (DjangoFilterBackend, )
-    filterset_fields = ('year', 'name',)
-    lookup_field = "id"
-
-    def get_queryset(self):
-        queryset = Title.objects.annotate(
-            rating=Avg('reviews__score')).order_by('id')
-        genre = self.request.query_params.get('genre')
-        category = self.request.query_params.get('category')
-        if genre is not None:
-            queryset = queryset.filter(genre__slug=genre)
-        elif category is not None:
-            queryset = queryset.filter(category__slug=category)
-        return queryset
+    queryset = Title.objects.all().annotate(
+        rating=Avg('reviews__score'))
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):

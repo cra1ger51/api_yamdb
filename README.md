@@ -1,4 +1,5 @@
 # YaMDb(API)
+API для сервиса YaMDb. Групповой проект.
 _________________________________________________
 ## Описание
 База произведений с обзорами, оценками и комментариями.
@@ -98,9 +99,9 @@ http://127.0.0.1:8000/redoc/
 ```
 ______________________________________
 ### Авторы
-Даниил Алексеенко(https://github.com/cra1ger51),
-Андрей Иванишин(https://github.com/AIvanishin),
-Виталий Симоненко(https://github.com/SimoneVita)
+- Даниил Алексеенко(https://github.com/cra1ger51)
+- Андрей Иванишин(https://github.com/AIvanishin)
+- Виталий Симоненко(https://github.com/SimoneVita)
 
 ### Лицензия
 BSD 3-Clause License
